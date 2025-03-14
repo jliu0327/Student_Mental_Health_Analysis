@@ -29,4 +29,51 @@ As mentioned, the dataset used for this project came from kaggle, and includes d
 
 ## Charts
 
-**
+**Age Distribution of College Students - Pie Chart**
+
+(Insert photo here)
+
+**Age and Gender Distribution - Bar Chart**
+
+(Insert photo here)
+
+**Current GPA by Depression Status - Bar Chart**
+
+(Insert photo here)
+
+**Current GPA by Anxiety Status - Bar Chart**
+
+(Insert photo here)
+
+**Current GPA by Panic Attack Status - Bar Chart**
+
+(Insert photo here)
+
+## Formulas and Functions
+
+**Current GPA and Depression Status**
+
+```R
+## CGPA and depression status
+cgpa_dep_df <- student_health %>%
+  select(Depression = Depression_Status, CGPA) %>%
+  mutate(CGPA = case_when(
+    CGPA == "3.50 - 4.00 " ~ "3.50 - 4.00",
+    TRUE ~ CGPA
+  )) %>%
+  group_by(Depression, CGPA) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  complete(CGPA, Depression, fill = list(count = 0))
+## plot
+ggplot(cgpa_dep_df, aes(x = CGPA, y = count, fill = Depression)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Current GPA by Depression Status",
+       x = "Current GPA", y = "Frequency", fill = "Depression")
+```
+
+- 
+
+```R
+dep_contingency_table <- xtabs(count ~ Depression + CGPA, data = cgpa_dep_df)
+dep_chi_square_test <- chisq.test(dep_contingency_table)
+```
