@@ -1,0 +1,240 @@
+library(dplyr)
+library(skimr)
+library(tidyr)
+library(janitor)
+library(ggplot2)
+library(statsr)
+library(stringr)
+
+# read file
+student_health <- read.csv("../Student_Mental_Health/student_mental_health.csv")
+
+# rename data columns
+student_health <- student_health %>%
+  rename("Gender" = "Choose.your.gender",
+    "Major" = "What.is.your.course.",
+    "Current_Year" = "Your.current.year.of.Study",
+    "CGPA" = "What.is.your.CGPA.",
+    "Marital_Status" = "Marital.status",
+    "Depression_Status" = "Do.you.have.Depression.",
+    "Anxiety_Status" = "Do.you.have.Anxiety.",
+    "Panic_Attack_Status" = "Do.you.have.Panic.attack.",
+    "Treatment_Specialist" = "Did.you.seek.any.specialist.for.a.treatment."
+  )
+
+# summary for table
+str(student_health)
+
+# preliminary data exploration
+## gender distribution
+gender_df <- student_health %>%
+  group_by(Gender) %>%
+  summarise(count = n()) %>%
+  as.data.frame()
+## calculate percentage for gender
+gender_df <- gender_df %>%
+  mutate(percentage = (count / sum(count) * 100))
+## pie chart for gender distribution
+ggplot(gender_df, aes(x = "", y = count, fill = Gender)) +
+  geom_bar(stat = "identity") +
+  coord_polar(theta = "y") +
+  theme_void() +
+  labs(title = "Gender Distribution of College Students") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")),
+            position = position_stack(vjust = 0.5))
+
+
+## age distribution
+age_df <- student_health %>%
+  filter(!is.na(Age)) %>%
+  group_by(Age) %>%
+  summarise(count = n()) %>%
+  as.data.frame()
+## calculate percentage for age
+age_df <- age_df %>%
+  mutate(percentage = (count / sum(count) * 100))
+## pie chart for age distribution
+ggplot(age_df, aes(x = "", y = count, fill = as.factor(Age))) +
+  geom_bar(stat = "identity") +
+  coord_polar(theta = "y") +
+  theme_void() +
+  labs(title = "Age Distribution of College Students", fill = "Age") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")),
+            position = position_stack(vjust = 0.6))
+
+
+## year distribution
+year_df <- student_health %>%
+  mutate(Current_Year = str_to_title(Current_Year)) %>%
+  group_by(Current_Year) %>%
+  summarise(count = n())
+## calculate percentage for distribution
+year_df <- year_df %>%
+  mutate(percentage = (count / sum(count) * 100))
+## pie chart for gender distribution
+ggplot(year_df, aes(x = "", y = count, fill = Current_Year)) +
+  geom_bar(stat = "identity") +
+  coord_polar(theta = "y") +
+  theme_void() +
+  labs(title = "Year Distribution of College Students", fill = "Current Year") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")),
+            position = position_stack(vjust = 0.5))
+
+
+## current gpa distribution
+cgpa_df <- student_health %>%
+  group_by(CGPA) %>%
+  summarise(count = n())
+## bar graph for gpa distribution
+ggplot(cgpa_df, aes(x = CGPA, y = count, fill = CGPA)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Current GPA Distribution for College Students", x = "Current GPA", y = "Frequency") # nolint
+
+
+## depreession status
+depression_df <- student_health %>%
+  group_by(Depression_Status) %>%
+  summarise(count = n())
+## calculate percentage
+depression_df <- depression_df %>%
+  mutate(percentage = (count / sum(count) * 100))
+## pie chart for gender distribution
+ggplot(depression_df, aes(x = "", y = count, fill = Depression_Status)) +
+  geom_bar(stat = "identity") +
+  coord_polar(theta = "y") +
+  theme_void() +
+  labs(title = "Preesence of Depression for College Students") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")),
+            position = position_stack(vjust = 0.5))
+
+
+## anxiety status
+anxiety_df <- student_health %>%
+  group_by(Anxiety_Status) %>%
+  summarise(count = n())
+## bar graph for anxiety
+ggplot(anxiety_df, aes(x = Anxiety_Status, y = count, fill = Anxiety_Status)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Presence of Anxiety for College Students", y = "Frequency")
+
+
+## panic status
+panic_df <- student_health %>%
+  group_by(Panic_Attack_Status) %>%
+  summarise(count = n())
+## percentage for panic attack
+panic_df <- panic_df %>%
+  mutate(percentage = (count / sum(count) * 100))
+## pie chart for panic attack
+ggplot(panic_df, aes(x = "", y = count, fill = Panic_Attack_Status)) +
+  geom_bar(stat = "identity") +
+  coord_polar(theta = "y") +
+  theme_void() +
+  labs(title = "Preesence of Panic Attack for College Students") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")),
+            position = position_stack(vjust = 0.5))
+
+
+# data analysis
+## gender and agee distribution
+age_gender_df <- student_health %>%
+  select(Age, Gender) %>%
+  filter(!is.na(Age)) %>%
+  group_by(Age, Gender) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  complete(Age, Gender, fill = list(count = 0))
+## plot
+ggplot(age_gender_df, aes(x = Age, y = count, fill = Gender)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Age and Gender Distribution", y = "Frequency")
+
+
+## gender and major
+major_gender_df <- student_health %>%
+  select(Major, Gender) %>%
+  mutate(Major = str_to_title(Major),
+    Major = case_when(
+      str_detect(Major, "Nursing") ~ "Nursing",
+      str_detect(Major, "Law") ~ "Law",
+      str_detect(Major, "Engine|Engin") ~ "Engineering",
+      str_detect(Major, "Pendidkan Islam") ~ "Pendidikan Islam",
+      str_detect(Major, "Figh|Fatwa") ~ "Figh",
+      TRUE ~ Major
+    )
+  ) %>%
+  group_by(Gender, Major) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  complete(Gender, Major, fill = list(count = 0))
+## plot bar graph
+ggplot(major_gender_df, aes(x = Major, y = count, fill = Gender)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Major and Gender Distribution") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+## CGPA and depression status
+cgpa_dep_df <- student_health %>%
+  select(Depression = Depression_Status, CGPA) %>%
+  mutate(CGPA = case_when(
+    CGPA == "3.50 - 4.00 " ~ "3.50 - 4.00",
+    TRUE ~ CGPA
+  )) %>%
+  group_by(Depression, CGPA) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  complete(CGPA, Depression, fill = list(count = 0))
+## plot
+ggplot(cgpa_dep_df, aes(x = CGPA, y =count, fill = Depression)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Current GPA by Depression Status",
+       x = "Current GPA", y = "Frequency", fill = "Depression")
+
+
+## CGPA and anxiety status
+cgpa_anx_df <- student_health %>%
+  select(Anxiety = Anxiety_Status, CGPA) %>%
+  mutate(CGPA = case_when(
+    CGPA == "3.50 - 4.00 " ~ "3.50 - 4.00",
+    TRUE ~ CGPA
+  )) %>%
+  group_by(Anxiety, CGPA) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  complete(CGPA, Anxiety, fill = list(count = 0))
+## plot
+ggplot(cgpa_anx_df, aes(x = CGPA, y = count, fill = Anxiety)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Current GPA by Anxiety Status",
+       x = "Current GPA", y = "Frequency", fill = "Anxiety")
+
+
+## CGPA and panic attack status
+cgpa_pa_df <- student_health %>%
+  select(Panic_Attack = Panic_Attack_Status, CGPA) %>%
+  mutate(CGPA = case_when(
+    CGPA == "3.50 - 4.00 " ~ "3.50 - 4.00",
+    TRUE ~ CGPA
+  )) %>%
+  group_by(Panic_Attack, CGPA) %>%
+  summarise(count = n(), .groups = "drop") %>%
+  complete(CGPA, Panic_Attack, fill = list(count = 0))
+## plot
+ggplot(cgpa_pa_df, aes(x = CGPA, y = count, fill = Panic_Attack)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Comparison of Current GPA by Panic Attack Status",
+       x = "Current GPA", y = "Frequency", fill = "Panic Attack")
+
+
+# inferential testing
+## depression inference
+dep_contingency_table <- xtabs(count ~ Depression + CGPA, data = cgpa_dep_df)
+dep_chi_square_test <- chisq.test(dep_contingency_table)
+print(dep_chi_square_test)
+
+## anxiety inference
+anx_contingency_table <- xtabs(count ~ Anxiety + CGPA, data = cgpa_anx_df)
+anx_chi_square_test <- chisq.test(anx_contingency_table)
+print(anx_chi_square_test)
+
+## panic attack inference
+pa_contingency_table <- xtabs(count ~ Panic_Attack + CGPA, data = cgpa_pa_df)
+pa_chi_square_test <- chisq.test(pa_contingency_table)
+print(pa_chi_square_test)
