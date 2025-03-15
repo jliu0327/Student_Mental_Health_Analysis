@@ -37,7 +37,7 @@ As mentioned, the dataset used for this project came from kaggle, and includes d
 
 (Insert photo here)
 
-**Current GPA by Depression Status - Bar Chart**
+**Presence of Panic Attack for College Students - Pie Chart**
 
 (Insert photo here)
 
