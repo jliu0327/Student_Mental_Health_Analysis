@@ -7,13 +7,14 @@ The data came from the kaggle dataset: [Student Mental Health](https://www.kaggl
 
 My final dashboard is in [Student_Mental_Health]()
 
-## R Skills Used
+## Tools I Used
 
-The following R skills were utilized for analysis:
+To tackle these questions, I sought out these key tools:
 
-- **dplyr**
-- **ggplot**
-- **chisq test**
+- **Kaggle**: Website used to access data
+- **R**: The primary language for accessing and manipulating the dataset
+- **Visual Studio Code**: Database platform for carrying out my R code
+- **Github**: Sharing and uploading my R scripts
 
 ## Student Mental Health Dataset
 
@@ -31,23 +32,33 @@ As mentioned, the dataset used for this project came from kaggle, and includes d
 
 **Age Distribution of College Students - Pie Chart**
 
-(Insert photo here)
+![Age_Distribution png](https://github.com/user-attachments/assets/8ffff4fb-7fac-4116-b626-be4bc3f648c0)
+
+*Pie chart visualizing the age distribution for college students in this dataset*
 
 **Age and Gender Distribution - Bar Chart**
 
-(Insert photo here)
+![Gender_Age_Distribution png](https://github.com/user-attachments/assets/362c2124-93c1-4dc8-8922-0c40897df1ee)
 
-**Presence of Panic Attack for College Students - Pie Chart**
+*Bar chart visualizing the gender and age distribution for college students*
 
-(Insert photo here)
+**Presence of Depression for College Students - Pie Chart**
+
+![Presence_of_Depression png](https://github.com/user-attachments/assets/2d4fa725-0720-4542-af9a-585f238132fc)
+
+*Pie chart visualizing the percentage of students with and without depression*
 
 **Current GPA by Anxiety Status - Bar Chart**
 
-(Insert photo here)
+![CGPA_Anxiety png](https://github.com/user-attachments/assets/8fa89ff5-9480-4a06-8b14-7db8b0be2ba2)
+
+*Bar chart visualizing the current gpa for college students, depending on their anxiety status*
 
 **Current GPA by Panic Attack Status - Bar Chart**
 
-(Insert photo here)
+![CGPA_Panic_Attack png](https://github.com/user-attachments/assets/df9a231b-351b-425b-a711-4b8d41998e0e)
+
+*Bar chart visualizing the current gpa for college students, depending on their panic attack status*
 
 ## Formulas and Functions
 
